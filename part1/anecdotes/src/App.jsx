@@ -22,6 +22,8 @@ const App = () => {
 
   const [selected, setSelected] = useState(0);
 
+  const [topAnecdote, setTopAnecdote] = useState(0);
+
 
   function setSelectedRandom() {
     const val = Math.floor(Math.random() * anecdotes.length);
@@ -38,17 +40,25 @@ const App = () => {
   function vote(){
     const copy = [...votes];
     copy[selected]+=1;
+    if(copy[selected]>votes[topAnecdote])
+    {
+      setTopAnecdote(selected);
+    }
     setVotes(copy);
   }
 
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
+      <h1>Anecdote</h1>
+      <h2>{anecdotes[selected]}</h2>
       <p>Votes:{votes[selected]}</p>
       <Button handleClick={()=>vote()} text="Vote"/>
       <br></br>
       <Button handleClick={()=>setSelectedRandom()} text="Get another anecdote"/>
-
+      <br></br>
+      <h1>Most voted anecdote</h1>
+      <h2>{anecdotes[topAnecdote]}</h2>
+      <p>Number of votes: {votes[topAnecdote]}</p>
     </div>
   );
 };
