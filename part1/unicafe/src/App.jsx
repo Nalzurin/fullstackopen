@@ -1,18 +1,25 @@
 import { useState } from "react";
 
+function StatisticsLine({ prefix, value, postfix }) {
+  return (
+    <p>
+      {prefix}: {value}{postfix}
+    </p>
+  );
+}
+
 function Statistics({ good, neutral, bad }) {
-  if(good+neutral+bad == 0){
-    return(<p>No feedback has been gathered</p>);
-  }
-  else{
+  if (good + neutral + bad == 0) {
+    return <p>No feedback has been gathered</p>;
+  } else {
     return (
       <>
-        <p>Good: {good}</p>
-        <p>Neutral: {neutral}</p>
-        <p>Bad: {bad}</p>
-        <p>Total: {good + neutral + bad}</p>
-        <p>Average:{(good - bad) / (good + neutral + bad)}</p>
-        <p>Positive%: {(good * 100) / (good + neutral + bad)}%</p>
+        <StatisticsLine prefix="Good" value={good} />
+        <StatisticsLine prefix="Neutral" value={neutral} />
+        <StatisticsLine prefix="Bad" value={bad} />
+        <StatisticsLine prefix="Total" value={good + neutral + bad} />
+        <StatisticsLine prefix="Average" value={(good - bad) / (good + neutral + bad)} />
+        <StatisticsLine prefix="Positive" value={(good * 100) / (good + neutral + bad)} postfix="%" />
       </>
     );
   }
