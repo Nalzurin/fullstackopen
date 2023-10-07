@@ -2,9 +2,13 @@ import { useState } from "react";
 
 function StatisticsLine({ prefix, value, postfix }) {
   return (
-    <p>
-      {prefix}: {value}{postfix}
-    </p>
+    <tr>
+      <td>{prefix}</td>
+      <td>
+        {value}
+        {postfix}
+      </td>
+    </tr>
   );
 }
 
@@ -14,12 +18,23 @@ function Statistics({ good, neutral, bad }) {
   } else {
     return (
       <>
-        <StatisticsLine prefix="Good" value={good} />
-        <StatisticsLine prefix="Neutral" value={neutral} />
-        <StatisticsLine prefix="Bad" value={bad} />
-        <StatisticsLine prefix="Total" value={good + neutral + bad} />
-        <StatisticsLine prefix="Average" value={(good - bad) / (good + neutral + bad)} />
-        <StatisticsLine prefix="Positive" value={(good * 100) / (good + neutral + bad)} postfix="%" />
+        <table>
+          <tbody>
+          <StatisticsLine prefix="Good" value={good} />
+          <StatisticsLine prefix="Neutral" value={neutral} />
+          <StatisticsLine prefix="Bad" value={bad} />
+          <StatisticsLine prefix="Total" value={good + neutral + bad} />
+          <StatisticsLine
+            prefix="Average"
+            value={(good - bad) / (good + neutral + bad)}
+          />
+          <StatisticsLine
+            prefix="Positive"
+            value={(good * 100) / (good + neutral + bad)}
+            postfix="%"
+          />
+          </tbody>
+        </table>
       </>
     );
   }
