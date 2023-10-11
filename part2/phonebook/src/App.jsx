@@ -1,7 +1,11 @@
 import { useState } from "react";
 
 function Number({ name, number }) {
-  return <li>{name} {number}</li>;
+  return (
+    <li>
+      {name} {number}
+    </li>
+  );
 }
 
 function PhoneBook({ persons }) {
@@ -21,7 +25,17 @@ function App() {
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  var freeId = persons.length+1;
+  const [filterName, setFilterName] = useState("");
+
+  const personsToShow = persons.filter(person => {
+    if (!filterName == "") {
+      console.log(person.name.toLowerCase().includes(filterName.toLowerCase()))
+      return person.name.toLowerCase().includes(filterName.toLowerCase());
+    }
+    else return true;
+  });
+
+  var freeId = persons.length + 1;
 
   const handleNameInputChange = (event) => {
     setNewName(event.target.value);
@@ -29,9 +43,13 @@ function App() {
   const handleNumberInputChange = (event) => {
     setNewNumber(event.target.value);
   };
+  const handleFilterNameChange = (event) => {
+    setFilterName(event.target.value);
+  };
+
   const addNewPerson = (event) => {
     event.preventDefault();
-    const object = { name: newName, number: newNumber, id: freeId};
+    const object = { name: newName, number: newNumber, id: freeId };
     const arrayCheck = persons.some(({ name }) => name === object.name);
     console.log(`Phonebook contains the person ${arrayCheck}`);
     if (arrayCheck) {
@@ -48,6 +66,9 @@ function App() {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        Filter: <input value={filterName} onChange={handleFilterNameChange} />
+      </div>
       <p>Debug: {newName}</p>
       <form onSubmit={addNewPerson}>
         <div>
@@ -61,7 +82,7 @@ function App() {
         </div>
       </form>
       <h2>Numbers</h2>
-      <PhoneBook persons={persons} />
+      <PhoneBook persons={personsToShow} />
     </div>
   );
 }
