@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Requests from "../Services/Requests";
 
 export default function InputForm({ persons, setPersons }) {
   const [newName, setNewName] = useState("");
@@ -6,23 +7,43 @@ export default function InputForm({ persons, setPersons }) {
 
   const addNewPerson = (event) => {
     event.preventDefault();
-    const object = { name: newName, number: newNumber, id: freeId };
-    const arrayCheck = persons.some(({ name }) => name === object.name);
+    const object = { name: newName, number: newNumber };
+    const arrayCheck = persons.find(({ name }) => name === object.name);
     console.log(`Phonebook contains the person ${arrayCheck}`);
-    if (arrayCheck) {
-      console.log(`Person not added`);
-      alert(`${object.name} is already added to phonebook`);
+    if (arrayCheck !== undefined) {
+      if (
+        window.confirm(
+          `${object.name} already exists in phonebook, do you want to overwrite the number?`
+        )
+      ) {
+        console.log(`Overwriting ${object.name}...`);
+        object.id = arrayCheck.id;
+        Requests.editNum(arrayCheck.id, object);
+        setPersons(
+          persons.map((person) => {
+            if (person.id == arrayCheck.id) {
+              console.log("Person found!");
+              return object;
+            }
+            else
+            {
+              console.log("Wrong person...");
+              return person;
+            }
+          })
+        );
+      }
     } else {
-      setPersons(persons.concat(object));
-      console.log(`Person added`);
-      freeId++;
+      Requests.addNum(object).then((data) => {
+        object.id = data.id;
+        setPersons(persons.concat(object));
+        console.log(`Person added`);
+      });
     }
+
     setNewName("");
     setNewNumber("");
   };
-
-  var freeId = persons.length + 1;
-
   const handleNameInputChange = (event) => {
     setNewName(event.target.value);
   };

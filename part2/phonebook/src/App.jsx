@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import Requests from "./Services/Requests"
 import Phonebook from "./Components/Phonebook";
 import InputForm from "./Components/InputForm";
 import Filter from "./Components/Filter";
@@ -13,10 +13,8 @@ function App() {
     } else return true;
   });
   useEffect(() => {
-    axios
-    .get("http://localhost:3001/persons")
-    .then((response) => {
-      setPersons(response.data);
+    Requests.getBook().then((data) => {
+      setPersons(data);
     });
   }, []);
 
@@ -26,7 +24,7 @@ function App() {
       <Filter filterName={filterName} setFilterName={setFilterName} />
       <InputForm persons={persons} setPersons={setPersons} />
       <h2>Numbers</h2>
-      <Phonebook persons={personsToShow} />
+      <Phonebook persons={personsToShow} personsAll={persons} setPersons={setPersons}/>
     </div>
   );
 }
