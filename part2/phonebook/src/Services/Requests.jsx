@@ -14,12 +14,12 @@ const addNum = (newObject) => {
 
 const editNum = (id, newObject) => {
   const request = axios.put(`${URL}/${id}`, newObject);
-  return request.then((response) => response.data).catch(()=>alert("Edit failed, the entry has already been deleted"));
+  return request.then((response) => response.data);
 };
 
 const deleteNum = (id) => {
   const request = axios.delete(`${URL}/${id}`);
-  return request.then((response) => response.data).catch(()=>alert("Deletion failed, the entry has already been deleted"));
+  return request.then((response) => response.data);
 };
 
 export default {
