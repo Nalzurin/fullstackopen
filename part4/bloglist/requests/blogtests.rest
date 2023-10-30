@@ -1,0 +1,13 @@
+GET http://localhost:3003/api/blogs
+###
+GET http://localhost:3003/api/blogs/653d6db79d3ccc1dd46274e4
+###
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+    "title": "May ways to cook Chicken",
+    "author": "Alfred Carnivore",
+    "url":"Test",
+    "likes":15
+}
