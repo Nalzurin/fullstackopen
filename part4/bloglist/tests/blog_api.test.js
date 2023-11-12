@@ -55,9 +55,16 @@ const initialBlogs = [
     __v: 0,
   },
 ];
-
+var token;
 beforeEach(async () => {
   await Blog.deleteMany({});
+  const user = {
+    username: "root",
+    password: "salainen",
+  };
+  const login = await api.post("/api/login").send(user);
+  token = login.body.token;
+  console.log(login.body);
   const blogObjects = initialBlogs.map((blog) => new Blog(blog));
   const promiseArray = blogObjects.map((blog) => blog.save());
   await Promise.all(promiseArray);
@@ -110,6 +117,7 @@ describe("Blog adding functionality", () => {
     };
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -172,7 +180,10 @@ describe("Blog updating functionality", () => {
     const BlogsAtStart = await helper.blogsInDb();
     const blogToUpdate = BlogsAtStart[0];
     blogToUpdate.likes = 150;
-    await api.put(`/api/blogs/${blogToUpdate.id}`).send(blogToUpdate).expect(200);
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(blogToUpdate)
+      .expect(200);
     const BlogsAtEnd = await helper.blogsInDb();
 
     expect(BlogsAtEnd).toHaveLength(BlogsAtStart.length);

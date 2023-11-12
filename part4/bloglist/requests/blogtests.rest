@@ -2,12 +2,19 @@ GET http://localhost:3003/api/blogs
 ###
 GET http://localhost:3003/api/blogs/653d6db79d3ccc1dd46274e4
 ###
+DELETE http://localhost:3003/api/blogs/65502f9c3cab58eb786cc875
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY1NTAyZjFlMzJkYjYyNmNjOTFkMDliYyIsImlhdCI6MTY5OTc1Mzg2NiwiZXhwIjoxNjk5NzU3NDY2fQ.4VAoF7-rhxLzODgS3MXC_NFdyb4SOO9wFlUN9oRagUA
+
+
+###
 POST http://localhost:3003/api/blogs
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY1NTAyZjFlMzJkYjYyNmNjOTFkMDliYyIsImlhdCI6MTY5OTc1Mzg2NiwiZXhwIjoxNjk5NzU3NDY2fQ.4VAoF7-rhxLzODgS3MXC_NFdyb4SOO9wFlUN9oRagUA
 
 {
     "title": "May ways to cook Chicken",
     "author": "Alfred Carnivore",
-    "url":"Test",
+    "userId":"654cf496cfe7b93d9175c14d",
+    "url":"Tessssssssssssssst",
     "likes":15
 }
