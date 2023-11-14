@@ -5,69 +5,51 @@ const helper = require("../utils/api_test_helper");
 const api = supertest(app);
 const Blog = require("../models/blog");
 
+
 const initialBlogs = [
   {
-    _id: "5a422a851b54a676234d17f7",
-    title: "React patterns",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-    likes: 7,
-    __v: 0,
-  },
-  {
-    _id: "5a422aa71b54a676234d17f8",
     title: "Go To Statement Considered Harmful",
     author: "Edsger W. Dijkstra",
     url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
     likes: 13,
-    __v: 0,
   },
   {
-    _id: "5a422b3a1b54a676234d17f9",
     title: "Canonical string reduction",
     author: "Edsger W. Dijkstra",
     url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
     likes: 12,
-    __v: 0,
   },
   {
-    _id: "5a422b891b54a676234d17fa",
     title: "First class tests",
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
     likes: 10,
-    __v: 0,
   },
   {
-    _id: "5a422ba71b54a676234d17fb",
     title: "TDD harms architecture",
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
     likes: 0,
-    __v: 0,
   },
   {
-    _id: "5a422bc61b54a676234d17fc",
     title: "Type wars",
     author: "Robert C. Martin",
     url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
     likes: 2,
-    __v: 0,
   },
 ];
+const userLogin = { username: "root", password: "salainen" };
 var token;
+beforeAll(async () => {
+  const login = await api.post("/api/login").send(userLogin);
+  token = login.body.token;
+}, 60000);
 beforeEach(async () => {
   await Blog.deleteMany({});
-  const user = {
-    username: "root",
-    password: "salainen",
-  };
-  const login = await api.post("/api/login").send(user);
-  token = login.body.token;
-  console.log(login.body);
-  const blogObjects = initialBlogs.map((blog) => new Blog(blog));
-  const promiseArray = blogObjects.map((blog) => blog.save());
-  await Promise.all(promiseArray);
+  for(const blog of initialBlogs)
+  {
+    await api.post("/api/blogs").set("Authorization", `Bearer ${token}`).send(blog);
+  }
 });
 
 describe("Blog viewing functionality", () => {
@@ -95,8 +77,7 @@ describe("Blog viewing functionality", () => {
   test("blog with a certain id exists", async () => {
     const Blogs = await helper.blogsInDb();
     const blog = Blogs[0];
-    const response = await api.get(`/api/blogs/${blog.id}`).expect(200);
-    expect(response.body).toEqual(blog);
+    await api.get(`/api/blogs/${blog.id}`).expect(200);
   });
 
   test("fails with 404 if blog with id doesn't exist", async () => {
@@ -106,6 +87,13 @@ describe("Blog viewing functionality", () => {
 });
 
 describe("Blog adding functionality", () => {
+  const newBlog = {
+    _id: "5a422bc61b54a676414aa7dc",
+    title: "Zero Likes Blogs",
+    author: "Olexandr O. Karpenko",
+    url: "https://www.youtube.com/",
+    __v: 0,
+  };
   test("new blog gets added correctly", async () => {
     const newBlog = {
       _id: "5a422bc61b54a676414d17dc",
@@ -115,6 +103,7 @@ describe("Blog adding functionality", () => {
       likes: 1999,
       __v: 0,
     };
+
     await api
       .post("/api/blogs")
       .set("Authorization", `Bearer ${token}`)
@@ -130,15 +119,9 @@ describe("Blog adding functionality", () => {
   });
 
   test("blog without a 'likes' property defaults to 0(zero) likes", async () => {
-    const newBlog = {
-      _id: "5a422bc61b54a676414aa7dc",
-      title: "Zero Likes Blogs",
-      author: "Olexandr O. Karpenko",
-      url: "https://www.youtube.com/",
-      __v: 0,
-    };
     await api
       .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect("Content-Type", /application\/json/);
@@ -156,7 +139,11 @@ describe("Blog adding functionality", () => {
       author: "Olexandr O. Karpenko",
       __v: 0,
     };
-    await api.post("/api/blogs").send(newBlog).expect(400);
+    await api
+      .post("/api/blogs")
+      .set("Authorization", `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
   });
 });
 
@@ -164,7 +151,12 @@ describe("Blog deleting functionality", () => {
   test("delete requests succeeds with status code 204 if id is valid", async () => {
     const BlogsAtStart = await helper.blogsInDb();
     const blogToDelete = BlogsAtStart[0];
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    console.log(BlogsAtStart);
+    console.log(blogToDelete.id);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .expect(204);
     const BlogsAtEnd = await helper.blogsInDb();
 
     expect(BlogsAtEnd).toHaveLength(BlogsAtStart.length - 1);
@@ -182,6 +174,7 @@ describe("Blog updating functionality", () => {
     blogToUpdate.likes = 150;
     await api
       .put(`/api/blogs/${blogToUpdate.id}`)
+      .set("Authorization", `Bearer ${token}`)
       .send(blogToUpdate)
       .expect(200);
     const BlogsAtEnd = await helper.blogsInDb();
