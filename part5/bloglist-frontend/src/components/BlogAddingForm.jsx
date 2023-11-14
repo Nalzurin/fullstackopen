@@ -1,6 +1,6 @@
 import { useState } from "react";
 import blogService from "../services/blogs";
-export default function BlogAddingForm({ Token, blogs, setBlogs }) {
+export default function BlogAddingForm({ Token, blogs, setBlogs, setNotification }) {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -18,8 +18,22 @@ export default function BlogAddingForm({ Token, blogs, setBlogs }) {
       setAuthor("");
       setUrl("");
       setBlogs(blogs.concat(result));
+      setNotification({ message: `Added blog "${result.title}" by ${result.author}`, failure: false });
+      setTimeout(() => {
+        setNotification({
+          message: null,
+          failure: false,
+        });
+      }, 5000);
     } catch (exception) {
       console.log(exception.message);
+      setNotification({ message: exception.message, failure: true });
+      setTimeout(() => {
+        setNotification({
+          message: null,
+          failure: false,
+        });
+      }, 5000);
     }
   };
   return (

@@ -1,6 +1,6 @@
 import loginFunc from "../services/login";
 import { useState } from "react";
-export default function LoginForm({ setUser }) {
+export default function LoginForm({ setUser, setNotification }) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const Login = async (event) => {
@@ -15,8 +15,22 @@ export default function LoginForm({ setUser }) {
       setLogin("");
       setPassword("");
       window.localStorage.setItem("loggedBlogappUser", JSON.stringify(result));
+      setNotification({ message: "Logged in", failure: false });
+      setTimeout(() => {
+        setNotification({
+          message: null,
+          failure: false,
+        });
+      }, 5000);
     } catch (exception) {
       console.log(exception.message);
+      setNotification({ message: `${exception.message}. Wrong login or password`, failure: true });
+      setTimeout(() => {
+        setNotification({
+          message: null,
+          failure: false,
+        });
+      }, 5000);
     }
   };
   return (
