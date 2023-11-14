@@ -12,8 +12,11 @@ export default function LoginForm({ setUser }) {
       });
       console.log(result);
       setUser(result);
+      setLogin("");
+      setPassword("");
+      window.localStorage.setItem("loggedBlogappUser", JSON.stringify(result));
     } catch (exception) {
-      console.log(`${exception.message}. Bad Credentials`);
+      console.log(exception.message);
     }
   };
   return (
