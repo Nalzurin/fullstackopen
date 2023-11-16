@@ -14,7 +14,10 @@ blogsRouter.get("/", async (request, response) => {
 blogsRouter.get("/:id", async (request, response) => {
   const id = request.params.id;
   logger.info(`Fetching blog with id: ${id}`);
-  const blog = await Blog.findById(id);
+  const blog = await Blog.findById(id).populate("user", {
+    username: 1,
+    name: 1,
+  });
   if (blog) {
     response.json(blog);
   } else {
@@ -42,6 +45,8 @@ blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   user.blogs = user.blogs.concat(blog._id);
 
   await user.save();
+
+  await result.populate("user", { username: 1, name: 1 });
 
   response.status(201).json(result);
 });
@@ -73,12 +78,14 @@ blogsRouter.put("/:id", async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
+    user: body.user,
   };
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
     new: true,
     runValidators: true,
     context: "query",
   });
+  await updatedBlog.populate("user", { username: 1, name: 1 });
   response.status(200).json(updatedBlog);
 });
 module.exports = blogsRouter;
