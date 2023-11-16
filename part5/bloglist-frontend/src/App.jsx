@@ -14,8 +14,19 @@ const App = () => {
     failure: false,
   });
 
+  function sortBlogs(blogs) {
+    console.log("sorting blogs", blogs);
+    const sortedBlogs = [...blogs].sort((a, b) => {
+      return b.likes - a.likes;
+    });
+    setBlogs(sortedBlogs);
+  }
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService.getAll().then((blogs) => {
+      setBlogs(blogs);
+      sortBlogs(blogs);
+    });
+
     console.log("Blogs retrieved");
     setNotification({ message: "Retrieved the blogs", failure: false });
     setTimeout(() => {
@@ -61,7 +72,14 @@ const App = () => {
         </Togglable>
 
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            blogsList={blogs}
+            user={user}
+            setBlogs={setBlogs}
+            sortBlogs={sortBlogs}
+          />
         ))}
       </div>
     );

@@ -24,7 +24,10 @@ export default function LoginForm({ setUser, setNotification }) {
       }, 5000);
     } catch (exception) {
       console.log(exception.message);
-      setNotification({ message: `${exception.message}. Wrong login or password`, failure: true });
+      setNotification({
+        message: `${exception.message}. Wrong login or password`,
+        failure: true,
+      });
       setTimeout(() => {
         setNotification({
           message: null,
